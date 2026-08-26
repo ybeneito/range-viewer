@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Push/Fold Range Viewer</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <nav id="sidebar">
+      <div id="stack-control" class="hidden">
+        <label for="stack-slider">Stack: <span id="stack-value"></span> bb</label>
+        <input type="range" id="stack-slider" min="0" max="0" step="1" value="0">
+      </div>
+      <div id="sidebar-groups"></div>
+    </nav>
+    <main id="content">
+      <div id="empty-state">Choisis un scénario dans la liste à gauche.</div>
+
+      <div id="scenario-view" class="hidden">
+        <header id="scenario-header">
+          <h2 id="scenario-title"></h2>
+        </header>
+        <div id="grid" class="hand-grid"></div>
+        <div id="legend"></div>
+      </div>
+
+      <div id="nash-view" class="hidden">
+        <header id="nash-header">
+          <h2 id="nash-title"></h2>
+        </header>
+        <div id="nash-grid" class="hand-grid"></div>
+        <div id="nash-legend">
+          <span class="nash-legend-item suited">Suited</span>
+          <span class="nash-legend-item offsuit">Offsuit</span>
+          <span class="nash-legend-item pocket">Pockets</span>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
