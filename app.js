@@ -20,6 +20,22 @@ function rgb(color) {
   return `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
 }
 
+// WCAG relative luminance -- lets us pick readable (dark-on-light vs
+// light-on-dark) text instead of the fixed dark text every cell/legend
+// pill used before, which turned invisible against the palette's darker
+// action colors (e.g. the near-black green/purple "shove-then-fold" tiers).
+function relativeLuminance([r, g, b]) {
+  const linear = (c) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b);
+}
+
+function readableTextClass(color) {
+  return relativeLuminance(color) > 0.5 ? "on-light" : "on-dark";
+}
+
 const state = {
   data: null,
   actionById: new Map(),
@@ -215,6 +231,7 @@ function renderGrid(scenario) {
       const cell = document.createElement("div");
       cell.className = "cell";
       const total = pieces.reduce((sum, p) => sum + p.weight, 0) || 1;
+      let majorityPiece = null;
       for (const piece of pieces) {
         const action = state.actionById.get(piece.actionId);
         const slice = document.createElement("div");
@@ -222,9 +239,14 @@ function renderGrid(scenario) {
         slice.style.flex = `${piece.weight} 0 0`;
         slice.style.background = rgb(action.color);
         cell.appendChild(slice);
+        if (!majorityPiece || piece.weight > majorityPiece.weight) majorityPiece = piece;
       }
       const label = document.createElement("span");
-      label.className = "cell-label";
+      // Label sits over the cell's largest slice (a split cell can't satisfy
+      // every slice's contrast at once) -- fold's white default covers the
+      // empty/no-piece case, which never happens in practice.
+      const bgColor = majorityPiece ? state.actionById.get(majorityPiece.actionId).color : [255, 255, 255];
+      label.className = "cell-label " + readableTextClass(bgColor);
       label.textContent = hand;
       cell.appendChild(label);
       gridEl.appendChild(cell);
@@ -238,7 +260,8 @@ function renderLegend(scenario) {
   for (const entry of scenario.legend) {
     const action = state.actionById.get(entry.actionId);
     const item = document.createElement("span");
-    item.className = "legend-item" + (entry.label.includes("???") ? " unconfirmed" : "");
+    item.className = "legend-item " + readableTextClass(action.color) +
+      (entry.label.includes("???") ? " unconfirmed" : "");
     item.style.background = rgb(action.color);
     item.textContent = entry.label;
     legendEl.appendChild(item);
