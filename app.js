@@ -65,7 +65,7 @@ const NAV_LAYOUT = {
       { label: "Vs Min-Raise", cells: { btn: [], bb: [{ id: "hu_bb_vs_mr" }] } },
       { label: "Call (vs Shove)", cells: { btn: [], bb: [{ id: "cos_hu" }] } },
       { label: "GTO / Nash", cells: {
-        btn: [{ id: "gto" }, { nash: "pusher" }], bb: [{ nash: "caller" }],
+        btn: [{ nash: "pusher" }], bb: [{ nash: "caller" }],
       } },
     ],
   },
